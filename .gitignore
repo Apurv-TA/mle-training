@@ -1,0 +1,10 @@
+#ignoring csv files
+*.csv
+
+#ignoring pyc files
+*.pyc
+
+#log and databases
+*.log
+*.sql
+*.sqlite
