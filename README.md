@@ -16,3 +16,7 @@ The following techniques have been used:
 
 ## To excute the script
 python < scriptname.py >
+
+## To execute ingest_data.py
+python ingest_data.py -f <relative_location>
+example: python ingest_data.py -f ../../data
