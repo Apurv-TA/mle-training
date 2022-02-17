@@ -1,19 +1,5 @@
-import os
 import logging
 import logging.config
-
-LOGGING_DEFAULT_CONFIG = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "default": {
-            "format": "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
-        },
-        "simple": {"format": "%(message)s"},
-    },
-    "root": {"level": "DEBUG"},
-}
 
 
 def configure_logger(
@@ -21,12 +7,14 @@ def configure_logger(
 ):
     """Function to setup configurations of logger through function.
 
-    The individual arguments of `log_file`, `console`, `log_level` will overwrite the ones in cfg.
+    The individual arguments of `log_file`, `console`, `log_level` will
+    overwrite the ones in cfg.
 
     Parameters
     ----------
             logger:
-                    Predefined logger object if present. If None a ew logger object will be created from root.
+                    Predefined logger object if present. If None a new logger
+                    object will be created from root.
             cfg: dict()
                     Configuration of the logging to be implemented by default
             log_file: str
@@ -42,24 +30,20 @@ def configure_logger(
     logging.Logger
     """
     if not cfg:
-        logging.config.dictConfig(LOGGING_DEFAULT_CONFIG)
+        logging.config.fileConfig(
+            "../../setup.cfg", disable_existing_loggers=False)
     else:
         logging.config.dictConfig(cfg)
 
     logger = logger or logging.getLogger()
 
-    if log_file or console:
+    if log_file:
+        fh = logging.FileHandler(log_file)
+        fh.setLevel(getattr(logging, log_level))
+        logger.addHandler(fh)
+
+    if not console:
         for hdlr in logger.handlers:
             logger.removeHandler(hdlr)
-
-        if log_file:
-            fh = logging.FileHandler(log_file)
-            fh.setLevel(getattr(logging, log_level))
-            logger.addHandler(fh)
-
-        if console:
-            sh = logging.StreamHandler()
-            sh.setLevel(getattr(logging, log_level))
-            logger.addHandler(sh)
 
     return logger

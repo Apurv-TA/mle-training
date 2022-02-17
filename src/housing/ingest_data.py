@@ -1,7 +1,6 @@
 """Module created to download and create training and validation datasets"""
 # importing libraries
 
-import logging
 import os
 import tarfile
 import urllib.request
@@ -18,6 +17,7 @@ from logging_setup import configure_logger
 
 args = argument()
 
+
 def load_raw_data(
     housing_url="""
     https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.tgz
@@ -26,7 +26,8 @@ def load_raw_data(
 ):
     """Function to read and load raw data.
 
-    The default arguments of the function can be overwritten when supplied by the user
+    The default arguments of the function can be overwritten when supplied by
+    the user
 
     Parameters
     ----------
@@ -52,12 +53,15 @@ def load_raw_data(
     df = pd.read_csv(csv_path)
     return df
 
+
 # TRAIN TEST SPLIT
+
 
 def train_test(df, housing_path=os.path.join(args.data, "processed")):
     """Function to split the data into train and test
 
-    The default arguments of the function can be overwritten when supplied by the user
+    The default arguments of the function can be overwritten
+    when supplied by the user
 
     Parameters
     ----------
@@ -106,11 +110,10 @@ def data_loading():
 
     return train, test
 
+
 if __name__ == "__main__":
     if args.log_path:
-        logging_record = os.path.join(
-            args.log_path, "custom_configure.log"
-        )
+        logging_record = os.path.join(args.log_path, "custom_configure.log")
     else:
         logging_record = None
     logger = configure_logger(
@@ -119,7 +122,7 @@ if __name__ == "__main__":
         log_level=args.log_level
     )
 
-    logging.info("Starting the run of ingest_data.py")
+    logger.info("Starting the run of ingest_data.py")
     data_loading()
-    logging.debug(f"Data saved in {args.data}")
-    logging.info("Run ended")
+    logger.debug(f"Data saved in {args.data}")
+    logger.info("Run ended")
