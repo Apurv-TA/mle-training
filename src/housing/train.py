@@ -1,12 +1,20 @@
-"""Module created to train the model"""
+# -*- coding: utf-8 -*-
+"""train.py docstring
+
+This module was created in order to create the pipeline and to
+train the model both of which will be used by us in other modules.
+"""
+
 # IMPORTING LIBRARIES
 import os
 import warnings
 
+import get_argument
 import joblib
+import logging_setup
 import numpy as np
 import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
+import utils
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
@@ -16,40 +24,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 
-from get_argument import argument
-from logging_setup import configure_logger
-
 # MODELLING
 # BASIC MODEL
-rooms_ix, bedrooms_ix, population_ix, households_ix = 3, 4, 5, 6
-
-
-class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
-    """Class to add some extra features to the dataframe
-
-    The features created are 'rooms_per_household' and
-    'population_per_household'
-    """
-
-    def __init__(self, add_bedrooms_per_room=True):  # no *args or **kargs
-        self.add_bedrooms_per_room = add_bedrooms_per_room
-
-    def fit(self, X, y=None):
-        return self  # nothing else to do
-
-    def transform(self, X):
-        """Function to transform the dataframe"""
-        rooms_per_household = X[:, rooms_ix] / X[:, households_ix]
-        population_per_household = X[:, population_ix] / X[:, households_ix]
-        if self.add_bedrooms_per_room:
-            bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
-            return np.c_[
-                X,
-                rooms_per_household,
-                population_per_household,
-                bedrooms_per_room
-            ]
-        return np.c_[X, rooms_per_household, population_per_household]
 
 
 def eval_matrics(model, x, y):
@@ -62,19 +38,23 @@ def eval_matrics(model, x, y):
     ----------
             model:
                 The model for which evaluatio is done
-            x:
-                Input values(Features)
-            y:
-                Output values(Label data)
+            x: array-like of shape (n_samples, n_features)
+                The data to fit. Can be for example a list, or an array.
+            y : array-like of shape (n_samples,) or (n_samples, n_outputs),
+                default=None
+                The target variable to try to predict in the case of
+                supervised learning.
+
     Returns
     ----------
     The mean of the cross validation scores
     """
+
     scores = cross_val_score(model, x, y, scoring="r2", cv=10)
     return scores.mean()
 
 
-def basic_modeling(train):
+def basic_modeling(train, models):
     """Function created to create the pipeline and do some basic modelling
     on the data
 
@@ -83,21 +63,26 @@ def basic_modeling(train):
 
     Parameters
     ----------
-            train:
+            train: pd.Dataframe
                 The training data for our problem
+            models: dict
+                Dictionary of model names and the models we will be using
+                for basic testing on the data.
+
     Returns
     ----------
     The final input and output data along with the model showing best result
     as well as the full pipeline i.e. housing_prepared, housing_labels,
-    models[model_selected] and full_pipeline
+    full_pipeline and evaluation result on basic tests.
     """
+
     housing = train.drop("median_house_value", axis=1)
     housing_labels = train["median_house_value"].copy()
 
     num_pipeline = Pipeline(
         [
             ("imputer", SimpleImputer(strategy="median")),
-            ("attribs_adder", CombinedAttributesAdder()),
+            ("attribs_adder", utils.CombinedAttributesAdder()),
             ("std_scaler", StandardScaler()),
         ]
     )
@@ -113,29 +98,17 @@ def basic_modeling(train):
     )
 
     housing_prepared = full_pipeline.fit_transform(housing)
-    models = {
-        "Linear_regres": LinearRegression(),
-        "Decision_tree": DecisionTreeRegressor(),
-        "Random_forest": RandomForestRegressor(),
-    }
 
     eval_dict = {}
     for model in models:
         score = eval_matrics(models[model], housing_prepared, housing_labels)
         eval_dict[model] = score
-        logger.debug(f"{model}_R2_Score: \t{score}")
 
-    model_selected = max(eval_dict)
-    logger.info(f"\nModel Selected: \t{model_selected}")
-    logger.info(f"Full pipeline used: \t{full_pipeline}")
-
-    final_model = models[model_selected]
-
-    return housing_prepared, housing_labels, final_model, full_pipeline
+    return housing_prepared, housing_labels, full_pipeline, eval_dict
 
 
 # FINE TUNING
-def model_search(train_x, train_y, params_grid, model, cv):
+def model_search(train_x, train_y, model, v=0):
     """Function to perform hyperparameter tuning on the model
 
     The default arguments of the function can be overwritten when
@@ -143,56 +116,18 @@ def model_search(train_x, train_y, params_grid, model, cv):
 
     Parameters
     ----------
-            train_x:
+            train_x: pd.Dataframe
                 The training input data
-            train_y:
+            train_y: pd.Dataframe
                 The training output data
-            params_grid:
-                Parameters grid for Hyperparameter training
             model:
                 Final model on which we will be working on
-            cv:
-                Number of cross validations for Hyperparameter tuning
+
     Returns
     ----------
-    Best estimator that can be created
+    Best search determined on the basis of parameter grid provided
+    and the number of cv.
     """
-
-    grid_search = GridSearchCV(
-        model,
-        params_grid,
-        cv=cv,
-        scoring="r2",
-        return_train_score=True,
-        verbose=args.verbosity,
-    )
-    logger.debug("Starting hyperparameter tuning using GridSearchCV:")
-    grid_search.fit(train_x, train_y)
-
-    logger.info(
-        f"Hyperparameters of {model} found: {grid_search.best_params_}."
-    )
-    logger.debug(f"Best score is: {grid_search.best_score_}")
-
-    return grid_search.best_estimator_
-
-
-if __name__ == "__main__":
-    warnings.filterwarnings("ignore")
-    args = argument()
-
-    if args.log_path:
-        log_f = os.path.join(args.log_path, "custom_configure.log")
-    else:
-        log_f = None
-
-    logger = configure_logger(
-        log_file=log_f, console=args.no_console_log, log_level=args.log_level
-    )
-
-    logger.info("Starting the run of train.py")
-    train = pd.read_csv(args.data + "/processed/train.csv")
-    housing_x, housing_y, final_model, final_pipeline = basic_modeling(train)
 
     param_grid = [
         {
@@ -206,15 +141,73 @@ if __name__ == "__main__":
         },
     ]
 
-    final_model = model_search(
-        train_x=housing_x,
-        train_y=housing_y,
-        params_grid=param_grid,
-        model=final_model,
+    grid_search = GridSearchCV(
+        model,
+        param_grid=param_grid,
         cv=5,
+        scoring="r2",
+        return_train_score=True,
+        verbose=v,
+    )
+    grid_search.fit(train_x, train_y)
+
+    return grid_search
+
+
+if __name__ == "__main__":
+    warnings.filterwarnings("ignore")
+    args = get_argument.argument()
+    train = pd.read_csv(args.data + "/processed/train.csv")
+
+    models = {
+        "Linear_regres": LinearRegression(),
+        "Decision_tree": DecisionTreeRegressor(),
+        "Random_forest": RandomForestRegressor(),
+    }
+
+    # defining the logger
+    if args.log_path:
+        LOG_FILE = os.path.join(args.log_path, "custom_configure.log")
+    else:
+        LOG_FILE = None
+
+    logger = logging_setup.configure_logger(
+        log_file=LOG_FILE,
+        console=args.no_console_log,
+        log_level=args.log_level
     )
 
-    joblib.dump(final_model, args.save + "model.pkl")
+    # starting the run
+    logger.info("Starting the run of train.py")
+
+    housing_x, housing_y, final_pipeline, results = basic_modeling(
+        train, models)
+    for model in results:
+        logger.debug(
+            f"{model}_R2_Score: \t{results[model]}"
+        )
+
+    model_selected = max(results)
+    final_model = models[model_selected]
+
+    logger.info(f"\nModel Selected: \t{model_selected}")
+    logger.info(f"Full pipeline used: \t{final_pipeline}")
+
+    logger.debug("Starting hyperparameter tuning using GridSearchCV:")
+    tuning_result = model_search(
+        train_x=housing_x,
+        train_y=housing_y,
+        model=final_model,
+        v=args.verbosity,
+    )
+
+    logger.info(
+        f"{model_selected} hyperparameters found: {tuning_result.best_params_}"
+    )
+    logger.debug(f"Best score is: {tuning_result.best_score_}")
+
+    joblib.dump(tuning_result.best_estimator_, args.save + "model.pkl")
     joblib.dump(final_pipeline, args.save + "pipeline.pkl")
+
     logger.info(f"model and pipeline saved in {args.save}")
     logger.info("Run ended")

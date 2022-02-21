@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""logging_setup.py docstring
+
+Module created in order to setup the logger used in the package.
+"""
+
+
 import logging
 import logging.config
 

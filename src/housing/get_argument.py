@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""get-argument.py docstring
+
+This module was created to define the command line level arguments
+that will be used in this package.
+"""
+
 import argparse
 import configparser
 

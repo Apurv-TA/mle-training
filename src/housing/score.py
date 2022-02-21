@@ -1,16 +1,20 @@
-"""Script to get the model and its score on the test set"""
+# -*- coding: utf-8 -*-
+"""score.py docstring
+
+Script to get the model and determine its performance on the test set.
+It is evaluated with the help of r2_Score
+"""
 import os
 
+import get_argument
 import joblib
+import logging_setup
 import pandas as pd
 from sklearn.metrics import r2_score
-
-from get_argument import argument
-from logging_setup import configure_logger
-from train import CombinedAttributesAdder
+from utils import CombinedAttributesAdder
 
 
-def score_test(df, model, full_pipeline):
+def score_test(df_test, model, full_pipeline):
     """Function created to calculate the score of the model on the
     basis of model selected and pipeline used.
 
@@ -19,7 +23,7 @@ def score_test(df, model, full_pipeline):
 
     Parameters
     ----------
-            df:
+            df_test: pd.Dataframe
                 The dataframe(containing test data) on which we are working on
             model:
                 The model used i.e. final model on which we are calculating
@@ -27,32 +31,33 @@ def score_test(df, model, full_pipeline):
             full_pipeline:
                 Final pipeline generated which is to be used for processing
                 data
+
     Returns
     ----------
     The R2 score is printed and returned
     """
-    x_test = df.drop("median_house_value", axis=1)
-    y_test = df["median_house_value"].copy()
+
+    x_test = df_test.drop("median_house_value", axis=1)
+    y_test = df_test["median_house_value"].copy()
 
     x_test_prepared = full_pipeline.transform(x_test)
     y_final_pred = model.predict(x_test_prepared)
 
     model_r2_score = r2_score(y_test, y_final_pred)
-    logger.debug(
-        f"The R2 score of the model on test set is: {model_r2_score.round(5)}"
-    )
     return model_r2_score
 
 
 if __name__ == "__main__":
-    args = argument()
+    args = get_argument.argument()
     if args.log_path:
-        log_f = os.path.join(args.log_path, "custom_configure.log")
+        LOG_FILE = os.path.join(args.log_path, "custom_configure.log")
     else:
-        log_f = None
+        LOG_FILE = None
 
-    logger = configure_logger(
-        log_file=log_f, console=args.no_console_log, log_level=args.log_level
+    logger = logging_setup.configure_logger(
+        log_file=LOG_FILE,
+        console=args.no_console_log,
+        log_level=args.log_level
     )
 
     logger.info("Starting the run of score.py")
@@ -61,5 +66,13 @@ if __name__ == "__main__":
     final_model = joblib.load(args.save + "model.pkl")
     housing_pipeline = joblib.load(args.save + "pipeline.pkl")
 
-    score_test(df=test, model=final_model, full_pipeline=housing_pipeline)
+    score = score_test(
+        df_test=test,
+        model=final_model,
+        full_pipeline=housing_pipeline
+    )
+
+    logger.debug(
+        f"The R2 score of the model on test set is: {score}"
+    )
     logger.info("Run ended")

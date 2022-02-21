@@ -1,4 +1,16 @@
-"""Module created to download and create training and validation datasets"""
+# -*- coding: utf-8 -*-
+"""ingest_data.py docstring
+
+This module was created to download the data on which we will
+be working on and to split the data and create training and
+validation datasets.
+
+Attributes
+----------
+args: argument namespace
+    It is created in order to define the argument namespace.
+"""
+
 # importing libraries
 
 import os
@@ -7,15 +19,14 @@ import urllib.request
 
 import numpy as np
 import pandas as pd
+import get_argument
+import logging_setup
 from sklearn.model_selection import StratifiedShuffleSplit
-
-from get_argument import argument
-from logging_setup import configure_logger
 
 # DATA
 # LOADING DATA
 
-args = argument()
+args = get_argument.argument()
 
 
 def load_raw_data(
@@ -31,10 +42,11 @@ def load_raw_data(
 
     Parameters
     ----------
-            housing_url:
+            housing_url: str
                 url from which the data can be taken
-            housing_path:
+            housing_path: StrOrBytesPath
                 location of the path where the file can be saved
+
     Returns
     ----------
     The dataframe
@@ -65,10 +77,11 @@ def train_test(df, housing_path=os.path.join(args.data, "processed")):
 
     Parameters
     ----------
-            df:
+            df: pd.Dataframe
                 The dataframe on which we are working on
-            housing_path:
+            housing_path: StrOrBytesPath
                 location of the path where the file can be saved
+
     Returns
     ----------
     The dataframes
@@ -101,10 +114,12 @@ def train_test(df, housing_path=os.path.join(args.data, "processed")):
 
 def data_loading():
     """This function combines all the things that are done in this module
+
     Returns
     ----------
-            The Training and testing data
+    The Training and testing data
     """
+
     df = load_raw_data()
     train, test = train_test(df)
 
@@ -113,11 +128,11 @@ def data_loading():
 
 if __name__ == "__main__":
     if args.log_path:
-        logging_record = os.path.join(args.log_path, "custom_configure.log")
+        LOG_FILE = os.path.join(args.log_path, "custom_configure.log")
     else:
-        logging_record = None
-    logger = configure_logger(
-        log_file=logging_record,
+        LOG_FILE = None
+    logger = logging_setup.configure_logger(
+        log_file=LOG_FILE,
         console=args.no_console_log,
         log_level=args.log_level
     )
