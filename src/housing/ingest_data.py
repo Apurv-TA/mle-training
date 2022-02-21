@@ -5,10 +5,6 @@ This module was created to download the data on which we will
 be working on and to split the data and create training and
 validation datasets.
 
-Attributes
-----------
-args: argument namespace
-    It is created in order to define the argument namespace.
 """
 
 # importing libraries
@@ -19,21 +15,17 @@ import urllib.request
 
 import numpy as np
 import pandas as pd
-import get_argument
-import logging_setup
 from sklearn.model_selection import StratifiedShuffleSplit
 
 # DATA
 # LOADING DATA
 
-args = get_argument.argument()
-
 
 def load_raw_data(
+    loc="../../data",
     housing_url="""
     https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.tgz
-    """,
-    housing_path=os.path.join(args.data, "raw"),
+    """
 ):
     """Function to read and load raw data.
 
@@ -42,15 +34,17 @@ def load_raw_data(
 
     Parameters
     ----------
-            housing_url: str
-                url from which the data can be taken
-            housing_path: StrOrBytesPath
-                location of the path where the file can be saved
+        loc: StrOrBytesPath
+            location of the path where the file can be saved
+        housing_url: str
+            url from which the data can be taken
 
     Returns
     ----------
     The dataframe
     """
+
+    housing_path = os.path.join(loc, "raw")
 
     # fetching housing data
     os.makedirs(housing_path, exist_ok=True)
@@ -69,7 +63,7 @@ def load_raw_data(
 # TRAIN TEST SPLIT
 
 
-def train_test(df, housing_path=os.path.join(args.data, "processed")):
+def train_test(df, loc):
     """Function to split the data into train and test
 
     The default arguments of the function can be overwritten
@@ -77,15 +71,16 @@ def train_test(df, housing_path=os.path.join(args.data, "processed")):
 
     Parameters
     ----------
-            df: pd.Dataframe
-                The dataframe on which we are working on
-            housing_path: StrOrBytesPath
-                location of the path where the file can be saved
+        df: pd.Dataframe
+            The dataframe on which we are working on
+        loc: StrOrBytesPath
+            location of the path where the file can be saved
 
     Returns
     ----------
     The dataframes
     """
+    housing_path = os.path.join(loc, "processed")
 
     # creating training and test set
     df["income_cat"] = pd.cut(
@@ -112,32 +107,20 @@ def train_test(df, housing_path=os.path.join(args.data, "processed")):
 # FINAL FUNCTION
 
 
-def data_loading():
+def data_loading(data_url, location):
     """This function combines all the things that are done in this module
+
+    Parameters
+    ----------
+        data_url: str
+            URL of the web location from where data can be loaded
+        location: str
+            Location of the folder where the data will be stored
 
     Returns
     ----------
     The Training and testing data
     """
 
-    df = load_raw_data()
-    train, test = train_test(df)
-
-    return train, test
-
-
-if __name__ == "__main__":
-    if args.log_path:
-        LOG_FILE = os.path.join(args.log_path, "custom_configure.log")
-    else:
-        LOG_FILE = None
-    logger = logging_setup.configure_logger(
-        log_file=LOG_FILE,
-        console=args.no_console_log,
-        log_level=args.log_level
-    )
-
-    logger.info("Starting the run of ingest_data.py")
-    data_loading()
-    logger.debug(f"Data saved in {args.data}")
-    logger.info("Run ended")
+    df = load_raw_data(loc=location, housing_url=data_url)
+    train_test(df, loc=location)

@@ -6,23 +6,15 @@ train the model both of which will be used by us in other modules.
 """
 
 # IMPORTING LIBRARIES
-import os
 import warnings
 
-import get_argument
 import joblib
-import logging_setup
-import numpy as np
 import pandas as pd
-import utils
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import GridSearchCV, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
-from sklearn.tree import DecisionTreeRegressor
 
 # MODELLING
 # BASIC MODEL
@@ -36,14 +28,14 @@ def eval_matrics(model, x, y):
 
     Parameters
     ----------
-            model:
-                The model for which evaluatio is done
-            x: array-like of shape (n_samples, n_features)
-                The data to fit. Can be for example a list, or an array.
-            y : array-like of shape (n_samples,) or (n_samples, n_outputs),
-                default=None
-                The target variable to try to predict in the case of
-                supervised learning.
+        model:
+            The model for which evaluatio is done
+        x: array-like of shape (n_samples, n_features)
+            The data to fit. Can be for example a list, or an array.
+        y : array-like of shape (n_samples,) or (n_samples, n_outputs),
+            default=None
+            The target variable to try to predict in the case of
+            supervised learning.
 
     Returns
     ----------
@@ -54,7 +46,7 @@ def eval_matrics(model, x, y):
     return scores.mean()
 
 
-def basic_modeling(train, models):
+def basic_modeling(train, models, custom_class):
     """Function created to create the pipeline and do some basic modelling
     on the data
 
@@ -63,11 +55,13 @@ def basic_modeling(train, models):
 
     Parameters
     ----------
-            train: pd.Dataframe
-                The training data for our problem
-            models: dict
-                Dictionary of model names and the models we will be using
-                for basic testing on the data.
+        train: pd.Dataframe
+            The training data for our problem
+        models: dict
+            Dictionary of model names and the models we will be using
+            for basic testing on the data.
+        custom_class: class
+            custom class needed for creating the pipeline
 
     Returns
     ----------
@@ -82,7 +76,7 @@ def basic_modeling(train, models):
     num_pipeline = Pipeline(
         [
             ("imputer", SimpleImputer(strategy="median")),
-            ("attribs_adder", utils.CombinedAttributesAdder()),
+            ("attribs_adder", custom_class),
             ("std_scaler", StandardScaler()),
         ]
     )
@@ -116,12 +110,14 @@ def model_search(train_x, train_y, model, v=0):
 
     Parameters
     ----------
-            train_x: pd.Dataframe
-                The training input data
-            train_y: pd.Dataframe
-                The training output data
-            model:
-                Final model on which we will be working on
+        train_x: pd.Dataframe
+            The training input data
+        train_y: pd.Dataframe
+            The training output data
+        model:
+            Final model on which we will be working on
+        v: int, default 0
+            value to put as verbosity during GridSearchCV
 
     Returns
     ----------
@@ -154,60 +150,55 @@ def model_search(train_x, train_y, model, v=0):
     return grid_search
 
 
-if __name__ == "__main__":
+def training(data_loc, artifacts_loc, models, verbosity, custom_class):
+    """
+    Final function used to train the best estimator, and to save
+    the model and pipeline to a given location
+
+    Parameters
+    ----------
+        data_loc: str or path
+            The path of the location where data will be stored
+        artifacts_lod: str or path
+            The path of the location where the artifacts will be stored
+        models: dict
+            Dictionary of the form {model_name: model} which will be used
+            for basic modeling
+        verbosity: int
+            numeric value supplied by the user used to control the output
+            of GridSearchCV
+        custom_class: class
+            custom class needed for the pipeline to work
+
+    Returns
+    ----------
+        'results', 'model_selected', 'final_pipeline', 'tuning_result' where
+        results is a dictionary of model name and the cross validation score
+        model_selected is the model selected by the module, final_pipeline is
+        the final pipeline used and tuning_result is the result of
+        Hyperparameter tuning.
+    """
+
     warnings.filterwarnings("ignore")
-    args = get_argument.argument()
-    train = pd.read_csv(args.data + "/processed/train.csv")
-
-    models = {
-        "Linear_regres": LinearRegression(),
-        "Decision_tree": DecisionTreeRegressor(),
-        "Random_forest": RandomForestRegressor(),
-    }
-
-    # defining the logger
-    if args.log_path:
-        LOG_FILE = os.path.join(args.log_path, "custom_configure.log")
-    else:
-        LOG_FILE = None
-
-    logger = logging_setup.configure_logger(
-        log_file=LOG_FILE,
-        console=args.no_console_log,
-        log_level=args.log_level
-    )
-
-    # starting the run
-    logger.info("Starting the run of train.py")
+    train = pd.read_csv(data_loc + "/processed/train.csv")
 
     housing_x, housing_y, final_pipeline, results = basic_modeling(
-        train, models)
-    for model in results:
-        logger.debug(
-            f"{model}_R2_Score: \t{results[model]}"
-        )
+        train,
+        models,
+        custom_class=custom_class()
+    )
 
     model_selected = max(results)
     final_model = models[model_selected]
 
-    logger.info(f"\nModel Selected: \t{model_selected}")
-    logger.info(f"Full pipeline used: \t{final_pipeline}")
-
-    logger.debug("Starting hyperparameter tuning using GridSearchCV:")
     tuning_result = model_search(
         train_x=housing_x,
         train_y=housing_y,
         model=final_model,
-        v=args.verbosity,
+        v=verbosity,
     )
 
-    logger.info(
-        f"{model_selected} hyperparameters found: {tuning_result.best_params_}"
-    )
-    logger.debug(f"Best score is: {tuning_result.best_score_}")
+    joblib.dump(tuning_result.best_estimator_, artifacts_loc + "model.pkl")
+    joblib.dump(final_pipeline, artifacts_loc + "pipeline.pkl")
 
-    joblib.dump(tuning_result.best_estimator_, args.save + "model.pkl")
-    joblib.dump(final_pipeline, args.save + "pipeline.pkl")
-
-    logger.info(f"model and pipeline saved in {args.save}")
-    logger.info("Run ended")
+    return results, model_selected, final_pipeline, tuning_result

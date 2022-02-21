@@ -19,18 +19,18 @@ def configure_logger(
 
     Parameters
     ----------
-            logger:
-                    Predefined logger object if present. If None a new logger
-                    object will be created from root.
-            cfg: dict()
-                    Configuration of the logging to be implemented by default
-            log_file: str
-                    Path to the log file for logs to be stored
-            console: bool
-                    To include a console handler(logs printing in console)
-            log_level: str
-                    One of `["INFO","DEBUG","WARNING","ERROR","CRITICAL"]`
-                    default - `"DEBUG"`
+        logger:
+            Predefined logger object if present. If None a new logger
+            object will be created from root.
+        cfg: dict()
+            Configuration of the logging to be implemented by default
+        log_file: str
+            Path to the log file for logs to be stored
+        console: bool
+            To include a console handler(logs printing in console)
+        log_level: str
+            One of `["INFO","DEBUG","WARNING","ERROR","CRITICAL"]`
+            default - `"DEBUG"`
 
     Returns
     -------

@@ -4,7 +4,6 @@
 This module contain the code for creating Custom transformer class
 'CombinedAttributesAdder'
 
-
 Attributes
 ----------
 rooms_ix: int
@@ -15,6 +14,7 @@ population_ix: int
     The index number of 'population' feature in the housing DataFrame.
 households_ix: int
     The index number of 'households' feature in the housing DataFrame.
+
 """
 
 import numpy as np

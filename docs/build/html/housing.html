@@ -42,10 +42,10 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">housing package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-housing.get_argument">housing.get_argument module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#housing-ingest-data-module">housing.ingest_data module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-housing.ingest_data">housing.ingest_data module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-housing.logging_setup">housing.logging_setup module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#housing-score-module">housing.score module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#housing-train-module">housing.train module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-housing.score">housing.score module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-housing.train">housing.train module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-housing.utils">housing.utils module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#attributes">Attributes</a></li>
 </ul>
@@ -100,8 +100,61 @@ that will be used in this package.</p>
 </dd></dl>
 
 </section>
-<section id="housing-ingest-data-module">
-<h2>housing.ingest_data module<a class="headerlink" href="#housing-ingest-data-module" title="Permalink to this headline"></a></h2>
+<section id="module-housing.ingest_data">
+<span id="housing-ingest-data-module"></span><h2>housing.ingest_data module<a class="headerlink" href="#module-housing.ingest_data" title="Permalink to this headline"></a></h2>
+<p>ingest_data.py docstring</p>
+<p>This module was created to download the data on which we will
+be working on and to split the data and create training and
+validation datasets.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="housing.ingest_data.data_loading">
+<span class="sig-prename descclassname"><span class="pre">housing.ingest_data.</span></span><span class="sig-name descname"><span class="pre">data_loading</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#housing.ingest_data.data_loading" title="Permalink to this definition"></a></dt>
+<dd><p>This function combines all the things that are done in this module</p>
+<blockquote>
+<div><dl class="simple">
+<dt>data_url: str</dt><dd><p>URL of the web location from where data can be loaded</p>
+</dd>
+<dt>location: str</dt><dd><p>Location of the folder where the data will be stored</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The Training and testing data</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="housing.ingest_data.load_raw_data">
+<span class="sig-prename descclassname"><span class="pre">housing.ingest_data.</span></span><span class="sig-name descname"><span class="pre">load_raw_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../../data'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">housing_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\n</span>&#160;&#160;&#160; <span class="pre">https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.tgz\n</span>&#160;&#160;&#160; <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#housing.ingest_data.load_raw_data" title="Permalink to this definition"></a></dt>
+<dd><p>Function to read and load raw data.</p>
+<p>The default arguments of the function can be overwritten when supplied by
+the user</p>
+<blockquote>
+<div><dl class="simple">
+<dt>loc: StrOrBytesPath</dt><dd><p>location of the path where the file can be saved</p>
+</dd>
+<dt>housing_url: str</dt><dd><p>url from which the data can be taken</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The dataframe</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="housing.ingest_data.train_test">
+<span class="sig-prename descclassname"><span class="pre">housing.ingest_data.</span></span><span class="sig-name descname"><span class="pre">train_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#housing.ingest_data.train_test" title="Permalink to this definition"></a></dt>
+<dd><p>Function to split the data into train and test</p>
+<p>The default arguments of the function can be overwritten
+when supplied by the user</p>
+<blockquote>
+<div><dl class="simple">
+<dt>df: pd.Dataframe</dt><dd><p>The dataframe on which we are working on</p>
+</dd>
+<dt>loc: StrOrBytesPath</dt><dd><p>location of the path where the file can be saved</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The dataframes</p>
+</dd></dl>
+
 </section>
 <section id="module-housing.logging_setup">
 <span id="housing-logging-setup-module"></span><h2>housing.logging_setup module<a class="headerlink" href="#module-housing.logging_setup" title="Permalink to this headline"></a></h2>
@@ -133,11 +186,155 @@ default - <cite>“DEBUG”</cite></p>
 </dd></dl>
 
 </section>
-<section id="housing-score-module">
-<h2>housing.score module<a class="headerlink" href="#housing-score-module" title="Permalink to this headline"></a></h2>
+<section id="module-housing.score">
+<span id="housing-score-module"></span><h2>housing.score module<a class="headerlink" href="#module-housing.score" title="Permalink to this headline"></a></h2>
+<p>score.py docstring</p>
+<p>Script to get the model and determine its performance on the test set.
+It is evaluated with the help of r2_Score</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="housing.score.result">
+<span class="sig-prename descclassname"><span class="pre">housing.score.</span></span><span class="sig-name descname"><span class="pre">result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts_loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_class</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#housing.score.result" title="Permalink to this definition"></a></dt>
+<dd><p>Function created to return the final score on the model.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>data_loc: str</dt><dd><p>path of the location where the data is stored</p>
+</dd>
+<dt>artifacts_loc: str</dt><dd><p>path of the location where the artifacts i.e. pipeline
+and the model is saved.</p>
+</dd>
+<dt>custom_class: class</dt><dd><p>custom class needed for the pipeline to work</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The final score caluclated is returned.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="housing.score.score_test">
+<span class="sig-prename descclassname"><span class="pre">housing.score.</span></span><span class="sig-name descname"><span class="pre">score_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_pipeline</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_class</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#housing.score.score_test" title="Permalink to this definition"></a></dt>
+<dd><p>Function created to calculate the score of the model on the
+basis of model selected and pipeline used.</p>
+<p>The default arguments of the function can be overwritten
+when supplied by the user</p>
+<blockquote>
+<div><dl class="simple">
+<dt>df_test: pd.Dataframe</dt><dd><p>The dataframe(containing test data) on which we are working on</p>
+</dd>
+<dt>model:</dt><dd><p>The model used i.e. final model on which we are calculating
+score on</p>
+</dd>
+<dt>full_pipeline:</dt><dd><p>Final pipeline generated which is to be used for processing
+data</p>
+</dd>
+<dt>custom_class: class</dt><dd><p>custom class needed for the pipeline to work</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The R2 score is printed and returned</p>
+</dd></dl>
+
 </section>
-<section id="housing-train-module">
-<h2>housing.train module<a class="headerlink" href="#housing-train-module" title="Permalink to this headline"></a></h2>
+<section id="module-housing.train">
+<span id="housing-train-module"></span><h2>housing.train module<a class="headerlink" href="#module-housing.train" title="Permalink to this headline"></a></h2>
+<p>train.py docstring</p>
+<p>This module was created in order to create the pipeline and to
+train the model both of which will be used by us in other modules.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="housing.train.basic_modeling">
+<span class="sig-prename descclassname"><span class="pre">housing.train.</span></span><span class="sig-name descname"><span class="pre">basic_modeling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_class</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#housing.train.basic_modeling" title="Permalink to this definition"></a></dt>
+<dd><p>Function created to create the pipeline and do some basic modelling
+on the data</p>
+<p>The default arguments of the function can be overwritten when supplied
+by the user</p>
+<blockquote>
+<div><dl class="simple">
+<dt>train: pd.Dataframe</dt><dd><p>The training data for our problem</p>
+</dd>
+<dt>models: dict</dt><dd><p>Dictionary of model names and the models we will be using
+for basic testing on the data.</p>
+</dd>
+<dt>custom_class: class</dt><dd><p>custom class needed for creating the pipeline</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The final input and output data along with the model showing best result
+as well as the full pipeline i.e. housing_prepared, housing_labels,
+full_pipeline and evaluation result on basic tests.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="housing.train.eval_matrics">
+<span class="sig-prename descclassname"><span class="pre">housing.train.</span></span><span class="sig-name descname"><span class="pre">eval_matrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#housing.train.eval_matrics" title="Permalink to this definition"></a></dt>
+<dd><p>function to get r2 score using cross_val_score</p>
+<p>The default arguments of the function can be overwritten when
+supplied by the user</p>
+<blockquote>
+<div><dl class="simple">
+<dt>model:</dt><dd><p>The model for which evaluatio is done</p>
+</dd>
+<dt>x: array-like of shape (n_samples, n_features)</dt><dd><p>The data to fit. Can be for example a list, or an array.</p>
+</dd>
+<dt>y<span class="classifier">array-like of shape (n_samples,) or (n_samples, n_outputs),</span></dt><dd><p>default=None
+The target variable to try to predict in the case of
+supervised learning.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>The mean of the cross validation scores</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="housing.train.model_search">
+<span class="sig-prename descclassname"><span class="pre">housing.train.</span></span><span class="sig-name descname"><span class="pre">model_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#housing.train.model_search" title="Permalink to this definition"></a></dt>
+<dd><p>Function to perform hyperparameter tuning on the model</p>
+<p>The default arguments of the function can be overwritten when
+supplied by the user</p>
+<blockquote>
+<div><dl class="simple">
+<dt>train_x: pd.Dataframe</dt><dd><p>The training input data</p>
+</dd>
+<dt>train_y: pd.Dataframe</dt><dd><p>The training output data</p>
+</dd>
+<dt>model:</dt><dd><p>Final model on which we will be working on</p>
+</dd>
+<dt>v: int, default 0</dt><dd><p>value to put as verbosity during GridSearchCV</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Best search determined on the basis of parameter grid provided
+and the number of cv.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="housing.train.training">
+<span class="sig-prename descclassname"><span class="pre">housing.train.</span></span><span class="sig-name descname"><span class="pre">training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts_loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_class</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#housing.train.training" title="Permalink to this definition"></a></dt>
+<dd><p>Final function used to train the best estimator, and to save
+the model and pipeline to a given location</p>
+<blockquote>
+<div><dl class="simple">
+<dt>data_loc: str or path</dt><dd><p>The path of the location where data will be stored</p>
+</dd>
+<dt>artifacts_lod: str or path</dt><dd><p>The path of the location where the artifacts will be stored</p>
+</dd>
+<dt>models: dict</dt><dd><p>Dictionary of the form {model_name: model} which will be used
+for basic modeling</p>
+</dd>
+<dt>verbosity: int</dt><dd><p>numeric value supplied by the user used to control the output
+of GridSearchCV</p>
+</dd>
+<dt>custom_class: class</dt><dd><p>custom class needed for the pipeline to work</p>
+</dd>
+</dl>
+</div></blockquote>
+<blockquote>
+<div><p>‘results’, ‘model_selected’, ‘final_pipeline’, ‘tuning_result’ where
+results is a dictionary of model name and the cross validation score
+model_selected is the model selected by the module, final_pipeline is
+the final pipeline used and tuning_result is the result of
+Hyperparameter tuning.</p>
+</div></blockquote>
+</dd></dl>
+
 </section>
 <section id="module-housing.utils">
 <span id="housing-utils-module"></span><h2>housing.utils module<a class="headerlink" href="#module-housing.utils" title="Permalink to this headline"></a></h2>

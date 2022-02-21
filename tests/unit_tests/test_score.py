@@ -9,6 +9,7 @@ HERE = op.dirname(op.abspath("__file__"))
 test_path = op.join(HERE, "..", "..", "src", "housing")
 sys.path.append(test_path)
 import score
+import utils
 
 
 @pytest.fixture
@@ -28,5 +29,10 @@ def pipe():
 
 
 def test_score(test_df, model, pipe):
-    score_model = score.score_test(test_df, model, pipe)
+    score_model = score.score_test(
+        test_df,
+        model,
+        pipe,
+        utils.CombinedAttributesAdder()
+    )
     assert isinstance(score_model, float)

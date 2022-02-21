@@ -30,14 +30,19 @@ def test_df():
 
 
 def test_load_raw_data(data):
-    load_df = ingest_data.load_raw_data()
+    load_df = ingest_data.load_raw_data(
+        loc="../../data",
+        housing_url="""
+        https://raw.githubusercontent.com/ageron/handson-ml2/master/datasets/housing/housing.tgz
+        """
+    )
     assert isinstance(load_df, pd.DataFrame)
     assert load_df.shape == data.shape
     assert load_df.equals(data)
 
 
 def test_train_test(data, train_df, test_df):
-    load_train, load_test = ingest_data.train_test(data)
+    load_train, load_test = ingest_data.train_test(data, loc = "../../data")
 
     assert isinstance(load_train, pd.DataFrame)
     assert "income_cat" not in load_train.columns

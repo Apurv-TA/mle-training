@@ -13,6 +13,7 @@ HERE = op.dirname(op.abspath("__file__"))
 test_path = op.join(HERE, "..", "..", "src", "housing")
 sys.path.append(test_path)
 import train
+import utils
 
 
 @pytest.fixture
@@ -28,7 +29,11 @@ def model_param(train_df):
         "Decision_tree": DecisionTreeRegressor(),
         "Random_forest": RandomForestRegressor(),
     }
-    x, y, pipe, results = train.basic_modeling(train_df, models)
+    x, y, pipe, results = train.basic_modeling(
+        train_df,
+        models,
+        utils.CombinedAttributesAdder()
+    )
 
     return x, y, pipe, models, results
 

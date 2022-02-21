@@ -4,17 +4,13 @@
 Script to get the model and determine its performance on the test set.
 It is evaluated with the help of r2_Score
 """
-import os
 
-import get_argument
 import joblib
-import logging_setup
 import pandas as pd
 from sklearn.metrics import r2_score
-from utils import CombinedAttributesAdder
 
 
-def score_test(df_test, model, full_pipeline):
+def score_test(df_test, model, full_pipeline, custom_class):
     """Function created to calculate the score of the model on the
     basis of model selected and pipeline used.
 
@@ -23,14 +19,16 @@ def score_test(df_test, model, full_pipeline):
 
     Parameters
     ----------
-            df_test: pd.Dataframe
-                The dataframe(containing test data) on which we are working on
-            model:
-                The model used i.e. final model on which we are calculating
-                score on
-            full_pipeline:
-                Final pipeline generated which is to be used for processing
-                data
+        df_test: pd.Dataframe
+            The dataframe(containing test data) on which we are working on
+        model:
+            The model used i.e. final model on which we are calculating
+            score on
+        full_pipeline:
+            Final pipeline generated which is to be used for processing
+            data
+        custom_class: class
+            custom class needed for the pipeline to work
 
     Returns
     ----------
@@ -47,32 +45,33 @@ def score_test(df_test, model, full_pipeline):
     return model_r2_score
 
 
-if __name__ == "__main__":
-    args = get_argument.argument()
-    if args.log_path:
-        LOG_FILE = os.path.join(args.log_path, "custom_configure.log")
-    else:
-        LOG_FILE = None
+def result(data_loc, artifacts_loc, custom_class):
+    """Function created to return the final score on the model.
 
-    logger = logging_setup.configure_logger(
-        log_file=LOG_FILE,
-        console=args.no_console_log,
-        log_level=args.log_level
-    )
+    Parameters
+    ----------
+        data_loc: str
+            path of the location where the data is stored
+        artifacts_loc: str
+            path of the location where the artifacts i.e. pipeline
+            and the model is saved.
+        custom_class: class
+            custom class needed for the pipeline to work
 
-    logger.info("Starting the run of score.py")
-    test = pd.read_csv(args.data + "/processed/test.csv")
+    Returns
+    ----------
+    The final score caluclated is returned.
+    """
+    test = pd.read_csv(data_loc + "/processed/test.csv")
 
-    final_model = joblib.load(args.save + "model.pkl")
-    housing_pipeline = joblib.load(args.save + "pipeline.pkl")
+    final_model = joblib.load(artifacts_loc + "model.pkl")
+    housing_pipeline = joblib.load(artifacts_loc + "pipeline.pkl")
 
     score = score_test(
         df_test=test,
         model=final_model,
-        full_pipeline=housing_pipeline
+        full_pipeline=housing_pipeline,
+        custom_class=custom_class()
     )
 
-    logger.debug(
-        f"The R2 score of the model on test set is: {score}"
-    )
-    logger.info("Run ended")
+    return score
