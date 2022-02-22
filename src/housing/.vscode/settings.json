@@ -1,0 +1,13 @@
+{
+    "editor.formatOnSave": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--ignore=F401"
+    ],
+    "python.formatting.provider": "black",
+    "python.sortImports.args": [
+        "--profile",
+        "black"
+    ],
+    "python.linting.lintOnSave": true,
+}

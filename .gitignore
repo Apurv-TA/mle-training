@@ -1,5 +1,9 @@
-#ignoring csv files
+#ignoring csv and tgz files
 *.csv
+*.tgz
+
+#ignore artifacts folder
+artifacts/
 
 #ignoring pyc files
 *.pyc
