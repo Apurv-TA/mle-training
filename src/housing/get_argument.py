@@ -18,7 +18,7 @@ def argument():
     """
 
     config = configparser.ConfigParser()
-    config.read("../../setup.cfg")
+    config.read("values.conf")
 
     parser = argparse.ArgumentParser()
     parser.add_argument(

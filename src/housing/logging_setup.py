@@ -38,7 +38,7 @@ def configure_logger(
     """
     if not cfg:
         logging.config.fileConfig(
-            "../../setup.cfg", disable_existing_loggers=False)
+            "values.conf", disable_existing_loggers=False)
     else:
         logging.config.dictConfig(cfg)
 
